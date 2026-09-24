@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球视野下的投资机会 · 交互问答</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #e6f0f5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .app {
+            max-width: 720px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 20, 30, 0.12), 0 8px 20px rgba(0, 20, 30, 0.08);
+            padding: 40px 36px;
+            transition: all 0.2s;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0b2b3b;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h1::before {
+            content: "📘";
+            font-size: 28px;
+        }
+        .subhead {
+            font-size: 14px;
+            color: #5b7a8a;
+            margin-bottom: 28px;
+            border-left: 3px solid #2c9c8f;
+            padding-left: 12px;
+            font-weight: 400;
+        }
+        .progress {
+            font-size: 14px;
+            color: #2c9c8f;
+            font-weight: 500;
+            background: #e0f2f0;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+            letter-spacing: 0.3px;
+        }
+        .question-box {
+            background: #f4fafd;
+            border-radius: 20px;
+            padding: 24px 22px;
+            margin-bottom: 18px;
+            border: 1px solid #d8e9f0;
+            min-height: 100px;
+        }
+        .question-text {
+            font-size: 18px;
+            line-height: 1.55;
+            color: #0a2a38;
+            font-weight: 500;
+        }
+        textarea {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            border: 2px solid #cde0e8;
+            border-radius: 18px;
+            resize: vertical;
+            min-height: 110px;
+            font-family: inherit;
+            background: #ffffff;
+            transition: 0.2s;
+            color: #0b2b3b;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        textarea:focus {
+            border-color: #2c9c8f;
+            box-shadow: 0 0 0 4px rgba(44, 156, 143, 0.12);
+        }
+        textarea::placeholder {
+            color: #9bb6c2;
+        }
+        button {
+            background: #2c9c8f;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 12px rgba(44, 156, 143, 0.25);
+            border: 1px solid #258a7e;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        button:hover {
+            background: #238b7f;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(44, 156, 143, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(44, 156, 143, 0.25);
+        }
+        button:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: none;
+        }
+        .btn-row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        #nextBtn {
+            background: #0b2b3b;
+            border-color: #0b2b3b;
+            box-shadow: 0 6px 12px rgba(11, 43, 59, 0.2);
+        }
+        #nextBtn:hover {
+            background: #123f52;
+            box-shadow: 0 12px 20px rgba(11, 43, 59, 0.25);
+        }
+        .feedback {
+            margin-top: 22px;
+            border-radius: 20px;
+            padding: 22px 20px;
+            background: #ffffff;
+            border-left: 6px solid #2c9c8f;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            line-height: 1.6;
+            font-size: 15px;
+            color: #1f3e4b;
+            display: none;
+        }
+        .feedback.correct {
+            border-left-color: #2c9c8f;
+            background: #f0faf8;
+        }
+        .feedback.incorrect {
+            border-left-color: #e07c5a;
+            background: #fef8f5;
+        }
+        .feedback .label {
+            font-weight: 700;
+            color: #0b2b3b;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        .feedback .answer-ref {
+            background: #ffffff;
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin: 10px 0 6px;
+            border: 1px solid #d8e9f0;
+            color: #1e4a5a;
+            font-size: 15px;
+        }
+        .feedback .user-ans {
+            color: #4f6f7e;
+            font-style: italic;
+            margin-top: 6px;
+            word-break: break-word;
+        }
+        .restart-link {
+            color: #2c9c8f;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            margin-left: 6px;
+            cursor: pointer;
+            border-bottom: 1px dashed #2c9c8f;
+        }
+        .restart-link:hover {
+            opacity: 0.8;
+        }
+        @media (max-width: 520px) {
+            .app {
+                padding: 28px 20px;
+                border-radius: 24px;
+            }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 16px; }
+            button { width: 100%; justify-content: center; }
+            .btn-row { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <h1>全球视野下的投资机会</h1>
+    <div class="subhead">时寒冰 · 交互问答</div>
+    <div class="progress" id="progress">第 1 / 10 题</div>
+
+    <div class="question-box">
+        <div class="question-text" id="questionText"></div>
+    </div>
+
+    <textarea id="answerInput" placeholder="输入你的答案…"></textarea>
+
+    <div class="btn-row">
+        <button id="submitBtn">提交答案</button>
+        <button id="nextBtn" style="display: none;">下一题 →</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+    // ---------- 题库（全部来自《全球视野下的投资机会》）----------
+    const questions = [
+        {
+            question: "时寒冰认为，高盈利的源头是把握趋势，这个“势”具体指哪些要素的流动方向？",
+            answer: "资本、资源、人口等流动的方向。",
+            keywords: ["资本", "资源", "人口"]
+        },
+        {
+            question: "全球央行近年来疯狂购买黄金的最主要原因是什么？",
+            answer: "货币超发，央行对货币贬值预期强，通过购买黄金规避风险。",
+            keywords: ["货币超发", "贬值", "避险", "超发"]
+        },
+        {
+            question: "白银与黄金相比，最突出的属性差异是什么？",
+            answer: "白银具有非常明显的工业属性，广泛应用于光伏、新能源汽车、电子产品等领域。",
+            keywords: ["工业属性", "工业", "光伏", "新能源"]
+        },
+        {
+            question: "在时寒冰看来，货币最强大的支撑力量是什么？",
+            answer: "科技和贸易。",
+            keywords: ["科技", "贸易"]
+        },
+        {
+            question: "为什么说人工智能时代核电迎来历史机遇？",
+            answer: "人工智能、数据中心等耗电惊人，需要稳定、零碳排放的电力，核电是可靠选择。",
+            keywords: ["耗电", "电力", "稳定", "零排放", "核电"]
+        },
+        {
+            question: "巴菲特在美股投资的核心思路是什么？（简要回答）",
+            answer: "买生产人们日常生活必需品的企业的股票，选择行业龙头（王者），长期持有。",
+            keywords: ["必需品", "龙头", "王者", "长期持有"]
+        },
+        {
+            question: "投资美债的最佳时间节点通常是什么时候？",
+            answer: "美联储加息周期接近结束、降息周期开启之前。",
+            keywords: ["加息结束", "降息", "加息周期", "加息周期结束"]
+        },
+        {
+            question: "中药材在海外市场发展最快、最容易被接受的形式是什么？",
+            answer: "植物提取物，做成膳食补充剂（保健品）销售。",
+            keywords: ["提取物", "膳食补充剂", "保健品"]
+        },
+        {
+            question: "时寒冰认为，哪种小金属是“机器人时代的灵魂”？",
+            answer: "钛。",
+            keywords: ["钛"]
+        },
+        {
+            question: "投资的本质是什么？",
+            answer: "交易未来，基于对未来的判断在当下做交易。",
+            keywords: ["未来", "交易未来", "判断"]
+        }
+    ];
+
+    // ---------- 状态 ----------
+    let currentIndex = 0;
+    const total = questions.length;
+
+    // ---------- DOM ----------
+    const progressEl = document.getElementById('progress');
+    const questionTextEl = document.getElementById('questionText');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const feedbackEl = document.getElementById('feedback');
+
+    // ---------- 渲染当前题目 ----------
+    function loadQuestion() {
+        const q = questions[currentIndex];
+        progressEl.textContent = `第 ${currentIndex + 1} / ${total} 题`;
+        questionTextEl.textContent = q.question;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        answerInput.focus();
+
+        // 重置按钮与反馈
+        submitBtn.style.display = 'inline-flex';
+        submitBtn.disabled = false;
+        nextBtn.style.display = 'none';
+        feedbackEl.style.display = 'none';
+        feedbackEl.className = 'feedback';
+        feedbackEl.innerHTML = '';
+    }
+
+    // ---------- 检查答案（关键词匹配，只要命中一个关键词即视为正确）----------
+    function evaluateAnswer(userAnswer, q) {
+        const text = userAnswer.trim().toLowerCase();
+        if (text.length === 0) {
+            return { correct: false, matched: 0, reason: '没有输入答案' };
+        }
+
+        // 转小写并检查关键词
+        let matchedCount = 0;
+        for (let kw of q.keywords) {
+            if (text.includes(kw.toLowerCase())) {
+                matchedCount++;
+            }
+        }
+
+        // 简单规则：命中任意一个关键词就算正确（因为关键词都是核心词）
+        // 也可以根据关键词长度做更细判断，但这里保持简洁
+        const correct = matchedCount >= 1;
+
+        return {
+            correct: correct,
+            matched: matchedCount,
+            reason: correct ? '回答正确！' : '回答不太准确，再看看参考答案吧。'
+        };
+    }
+
+    // ---------- 提交答案 ----------
+    function handleSubmit() {
+        const userAnswer = answerInput.value.trim();
+        const q = questions[currentIndex];
+        const result = evaluateAnswer(userAnswer, q);
+
+        // 禁用输入与提交
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+
+        // 显示反馈
+        feedbackEl.style.display = 'block';
+        if (result.correct) {
+            feedbackEl.className = 'feedback correct';
+        } else {
+            feedbackEl.className = 'feedback incorrect';
+        }
+
+        // 构建反馈 HTML
+        let html = `<span class="label">${result.correct ? '✅ 回答正确' : '📌 参考答案'}</span>`;
+        html += `<div class="answer-ref">${q.answer}</div>`;
+
+        if (!result.correct) {
+            html += `<div class="user-ans">你的答案：${userAnswer || '（空）'}</div>`;
+            if (result.matched > 0) {
+                html += `<div style="margin-top:8px;font-size:14px;color:#2c9c8f;">💡 你提到了部分关键词，但不够完整。</div>`;
+            }
+        } else {
+            // 正确时也可以展示用户答案
+            html += `<div class="user-ans" style="margin-top:6px;">你的答案：${userAnswer}</div>`;
+        }
+
+        // 如果是最后一题，显示重新开始
+        if (currentIndex === total - 1) {
+            html += `<div style="margin-top:16px;"><span class="restart-link" id="restartFromFeedback">↻ 重新开始</span></div>`;
+        }
+
+        feedbackEl.innerHTML = html;
+
+        // 绑定重新开始事件（如果存在）
+        const restartLink = document.getElementById('restartFromFeedback');
+        if (restartLink) {
+            restartLink.addEventListener('click', restartQuiz);
+        }
+
+        // 显示下一题按钮（如果是最后一题，文本改为“重新开始”）
+        if (currentIndex === total - 1) {
+            nextBtn.textContent = '↻ 重新开始';
+        } else {
+            nextBtn.textContent = '下一题 →';
+        }
+        nextBtn.style.display = 'inline-flex';
+    }
+
+    // ---------- 下一题 ----------
+    function handleNext() {
+        if (currentIndex === total - 1) {
+            // 最后一题后，重新开始
+            restartQuiz();
+        } else {
+            currentIndex++;
+            loadQuestion();
+        }
+    }
+
+    // ---------- 重新开始 ----------
+    function restartQuiz() {
+        currentIndex = 0;
+        loadQuestion();
+    }
+
+    // ---------- 事件绑定 ----------
+    submitBtn.addEventListener('click', handleSubmit);
+    nextBtn.addEventListener('click', handleNext);
+
+    // 允许在 textarea 中按 Ctrl+Enter 提交
+    answerInput.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            if (!submitBtn.disabled) {
+                handleSubmit();
+            }
+        }
+    });
+
+    // 初始化
+    loadQuestion();
+</script>
+</body>
+</html>
